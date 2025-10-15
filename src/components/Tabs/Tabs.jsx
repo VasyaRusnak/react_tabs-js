@@ -1,22 +1,14 @@
-// Tabs.jsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-export const Tabs = ({ tabs, activeTabId, onTabSelected }) => {
-  const initialActive = tabs.find(tab => tab.id === activeTabId)?.id || tabs[0].id;
-  const [activeTab, setActiveTab] = useState(initialActive);
+export const Tabs = ({ tabs = [], activeTabId, onTabSelected }) => {
+  if (!tabs.length) return null;
 
-  useEffect(() => {
-    const validTab = tabs.find(tab => tab.id === activeTabId)?.id;
-    if (validTab && validTab !== activeTab) setActiveTab(validTab);
-  }, [activeTabId, tabs]);
+  // Визначаємо активну вкладку
+  const resolvedActiveId = tabs.find(tab => tab.id === activeTabId)
+    ? activeTabId
+    : tabs[0].id;
 
-  const handleClick = (tabId) => {
-    if (tabId === activeTab) return;
-    setActiveTab(tabId);
-    if (onTabSelected) onTabSelected(tabId);
-  };
-
-  const selectedTab = tabs.find(tab => tab.id === activeTab);
+  const selectedTab = tabs.find(tab => tab.id === resolvedActiveId);
 
   return (
     <div data-cy="TabsComponent">
@@ -25,15 +17,17 @@ export const Tabs = ({ tabs, activeTabId, onTabSelected }) => {
           {tabs.map(tab => (
             <li
               key={tab.id}
-              className={tab.id === activeTab ? 'is-active' : ''}
+              className={tab.id === resolvedActiveId ? 'is-active' : ''}
               data-cy="Tab"
             >
               <a
-                href={`#${tab.id}`}
+                href={`#${tab.id}`} // важливо для тестів
                 data-cy="TabLink"
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
-                  handleClick(tab.id);
+                  if (tab.id !== resolvedActiveId && onTabSelected) {
+                    onTabSelected(tab.id);
+                  }
                 }}
               >
                 {tab.title}
