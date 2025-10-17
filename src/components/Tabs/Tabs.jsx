@@ -1,12 +1,19 @@
 import React from 'react';
 
 export const Tabs = ({ tabs = [], activeTabId, onTabSelected }) => {
-  if (!tabs.length) return null;
+  if (tabs.length === 0) {
+    return (
+      <div data-cy="TabsComponent">
+        <div className="tabs is-boxed">
+          <ul />
+        </div>
+        <div className="block" data-cy="TabContent" />
+      </div>
+    );
+  }
 
-  // Визначаємо активну вкладку
-  const resolvedActiveId = tabs.find(tab => tab.id === activeTabId)
-    ? activeTabId
-    : tabs[0].id;
+  const resolvedActiveId =
+    tabs.find(tab => tab.id === activeTabId)?.id || tabs[0].id;
 
   const selectedTab = tabs.find(tab => tab.id === resolvedActiveId);
 
@@ -21,7 +28,7 @@ export const Tabs = ({ tabs = [], activeTabId, onTabSelected }) => {
               data-cy="Tab"
             >
               <a
-                href={`#${tab.id}`} // важливо для тестів
+                href={`#${tab.id}`}
                 data-cy="TabLink"
                 onClick={e => {
                   e.preventDefault();
@@ -37,6 +44,7 @@ export const Tabs = ({ tabs = [], activeTabId, onTabSelected }) => {
         </ul>
       </div>
 
+      {}
       <div className="block" data-cy="TabContent">
         {selectedTab?.content}
       </div>
